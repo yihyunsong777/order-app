@@ -1,0 +1,49 @@
+.header {
+  width: 100%;
+  border-bottom: 2px solid #00695c;
+  padding: 1rem 2rem;
+  background-color: #00897b;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-tab {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.nav-tab:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-tab.active {
+  background-color: white;
+  color: #00897b;
+  border-color: white;
+}
+

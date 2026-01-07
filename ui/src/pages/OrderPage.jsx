@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAppContext } from '../context/AppContext';
 import MenuCard from '../components/MenuCard';
 import Cart from '../components/Cart';
 import './OrderPage.css';
@@ -74,9 +75,21 @@ const menuData = [
 ];
 
 function OrderPage() {
+  const { checkInventory, addOrder } = useAppContext();
   const [cartItems, setCartItems] = useState([]);
 
   const handleAddToCart = (menuWithOptions) => {
+    // 재고 확인
+    const availableStock = checkInventory(menuWithOptions.name);
+    const currentCartQuantity = cartItems
+      .filter((item) => item.name === menuWithOptions.name)
+      .reduce((sum, item) => sum + item.quantity, 0);
+
+    if (availableStock <= currentCartQuantity) {
+      alert(`${menuWithOptions.name}의 재고가 부족합니다. (남은 재고: ${availableStock}개)`);
+      return;
+    }
+
     const existingItemIndex = cartItems.findIndex(
       (item) =>
         item.id === menuWithOptions.id &&
@@ -98,13 +111,31 @@ function OrderPage() {
   const handleOrder = () => {
     if (cartItems.length === 0) return;
 
-    alert('주문이 완료되었습니다!');
-    setCartItems([]);
+    const result = addOrder(cartItems);
+    
+    if (result.success) {
+      alert(`${result.message}\n주문번호: ${result.orderId}`);
+      setCartItems([]);
+    } else {
+      alert(result.message);
+    }
   };
 
   const handleUpdateQuantity = (index, newQuantity) => {
     if (newQuantity <= 0) {
       handleRemoveItem(index);
+      return;
+    }
+
+    // 재고 확인
+    const item = cartItems[index];
+    const availableStock = checkInventory(item.name);
+    const otherCartQuantity = cartItems
+      .filter((_, i) => i !== index && cartItems[i].name === item.name)
+      .reduce((sum, item) => sum + item.quantity, 0);
+
+    if (newQuantity + otherCartQuantity > availableStock) {
+      alert(`${item.name}의 재고가 부족합니다. (남은 재고: ${availableStock}개)`);
       return;
     }
 
@@ -126,7 +157,12 @@ function OrderPage() {
       </div>
       <div className="menu-grid">
         {menuData.map((menu) => (
-          <MenuCard key={menu.id} menu={menu} onAddToCart={handleAddToCart} />
+          <MenuCard
+            key={menu.id}
+            menu={menu}
+            onAddToCart={handleAddToCart}
+            availableStock={checkInventory(menu.name)}
+          />
         ))}
       </div>
       <Cart

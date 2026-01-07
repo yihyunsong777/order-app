@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './MenuCard.css';
 
-function MenuCard({ menu, onAddToCart }) {
+function MenuCard({ menu, onAddToCart, availableStock = 0 }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const isSoldOut = availableStock === 0;
 
   const handleOptionChange = (option) => {
     if (selectedOptions.includes(option)) {
@@ -33,7 +34,7 @@ function MenuCard({ menu, onAddToCart }) {
   };
 
   return (
-    <div className="menu-card">
+    <div className={`menu-card ${isSoldOut ? 'sold-out' : ''}`}>
       <div className="menu-image">
         {menu.image ? (
           <img src={menu.image} alt={menu.name} />
@@ -42,9 +43,15 @@ function MenuCard({ menu, onAddToCart }) {
             <span>×</span>
           </div>
         )}
+        {isSoldOut && <div className="sold-out-overlay">품절</div>}
       </div>
       <div className="menu-info">
-        <h3 className="menu-name">{menu.name}</h3>
+        <div className="menu-header">
+          <h3 className="menu-name">{menu.name}</h3>
+          <span className={`stock-badge ${availableStock < 5 ? 'low-stock' : ''}`}>
+            재고 {availableStock}개
+          </span>
+        </div>
         <p className="menu-price">{menu.price.toLocaleString()}원</p>
         <p className="menu-description">{menu.description}</p>
       </div>
@@ -62,8 +69,12 @@ function MenuCard({ menu, onAddToCart }) {
           </label>
         ))}
       </div>
-      <button className="add-button" onClick={handleAddToCart}>
-        담기
+      <button
+        className="add-button"
+        onClick={handleAddToCart}
+        disabled={isSoldOut}
+      >
+        {isSoldOut ? '품절' : '담기'}
       </button>
     </div>
   );

@@ -4,78 +4,8 @@ import MenuCard from '../components/MenuCard';
 import Cart from '../components/Cart';
 import './OrderPage.css';
 
-// 메뉴 데이터
-const menuData = [
-  {
-    id: 1,
-    name: '아메리카노(ICE)',
-    price: 4000,
-    description: '시원하고 깔끔한 아이스 아메리카노',
-    image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=500&h=400&fit=crop&q=80',
-    options: [
-      { name: '샷 추가', price: 500 },
-      { name: '시럽 추가', price: 0 },
-    ],
-  },
-  {
-    id: 2,
-    name: '아메리카노(HOT)',
-    price: 4000,
-    description: '따뜻하고 진한 아메리카노',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&h=400&fit=crop&q=80',
-    options: [
-      { name: '샷 추가', price: 500 },
-      { name: '시럽 추가', price: 0 },
-    ],
-  },
-  {
-    id: 3,
-    name: '카페라떼',
-    price: 5000,
-    description: '부드러운 우유가 가득한 라떼',
-    image: 'https://images.unsplash.com/photo-1561882468-9110e03e0f78?w=500&h=400&fit=crop&q=80',
-    options: [
-      { name: '샷 추가', price: 500 },
-      { name: '시럽 추가', price: 0 },
-    ],
-  },
-  {
-    id: 4,
-    name: '카푸치노',
-    price: 5000,
-    description: '풍부한 거품이 일품인 카푸치노',
-    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=500&h=400&fit=crop&q=80',
-    options: [
-      { name: '샷 추가', price: 500 },
-      { name: '시럽 추가', price: 0 },
-    ],
-  },
-  {
-    id: 5,
-    name: '바닐라라떼',
-    price: 5500,
-    description: '달콤한 바닐라 향이 가득한 라떼',
-    image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=500&h=400&fit=crop&q=80',
-    options: [
-      { name: '샷 추가', price: 500 },
-      { name: '휘핑 추가', price: 500 },
-    ],
-  },
-  {
-    id: 6,
-    name: '카라멜 마키아또',
-    price: 6000,
-    description: '달콤한 카라멜 시럽과 에스프레소의 조화',
-    image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=500&h=400&fit=crop&q=80',
-    options: [
-      { name: '샷 추가', price: 500 },
-      { name: '휘핑 추가', price: 500 },
-    ],
-  },
-];
-
 function OrderPage() {
-  const { checkInventory, addOrder } = useAppContext();
+  const { menus, menusLoading, checkInventory, addOrder } = useAppContext();
   const [cartItems, setCartItems] = useState([]);
 
   const handleAddToCart = (menuWithOptions) => {
@@ -108,10 +38,10 @@ function OrderPage() {
     }
   };
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
     if (cartItems.length === 0) return;
 
-    const result = addOrder(cartItems);
+    const result = await addOrder(cartItems);
     
     if (result.success) {
       alert(`${result.message}\n주문번호: ${result.orderId}`);
@@ -149,6 +79,32 @@ function OrderPage() {
     setCartItems(newCartItems);
   };
 
+  // API에서 가져온 메뉴 데이터를 MenuCard 형식으로 변환
+  const formatMenuForCard = (menu) => {
+    return {
+      id: menu.id,
+      name: menu.name,
+      price: menu.price,
+      description: menu.description,
+      image: menu.image_url,
+      options: menu.options || [],
+    };
+  };
+
+  if (menusLoading) {
+    return (
+      <div className="order-page">
+        <div className="menu-section-header">
+          <h2 className="menu-section-title">메뉴</h2>
+          <p className="menu-section-subtitle">이현다방의 특별한 커피를 만나보세요</p>
+        </div>
+        <div style={{ textAlign: 'center', padding: '4rem' }}>
+          <p>메뉴를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="order-page">
       <div className="menu-section-header">
@@ -156,14 +112,17 @@ function OrderPage() {
         <p className="menu-section-subtitle">이현다방의 특별한 커피를 만나보세요</p>
       </div>
       <div className="menu-grid">
-        {menuData.map((menu) => (
-          <MenuCard
-            key={menu.id}
-            menu={menu}
-            onAddToCart={handleAddToCart}
-            availableStock={checkInventory(menu.name)}
-          />
-        ))}
+        {menus.map((menu) => {
+          const menuCard = formatMenuForCard(menu);
+          return (
+            <MenuCard
+              key={menu.id}
+              menu={menuCard}
+              onAddToCart={handleAddToCart}
+              availableStock={checkInventory(menu.name)}
+            />
+          );
+        })}
       </div>
       <Cart
         cartItems={cartItems}

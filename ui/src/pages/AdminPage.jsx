@@ -9,6 +9,7 @@ function AdminPage() {
   const {
     inventory,
     orders,
+    ordersLoading,
     setInventoryQuantity,
     updateOrderStatus,
     getStats,
@@ -24,6 +25,7 @@ function AdminPage() {
       <OrderManagement
         orders={orders}
         onUpdateOrderStatus={updateOrderStatus}
+        loading={ordersLoading}
       />
     </div>
   );

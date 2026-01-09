@@ -1,7 +1,7 @@
 import React from 'react';
 import './OrderManagement.css';
 
-function OrderManagement({ orders, onUpdateOrderStatus }) {
+function OrderManagement({ orders, onUpdateOrderStatus, loading = false }) {
   const formatDate = (date) => {
     const d = new Date(date);
     const month = d.getMonth() + 1;
@@ -52,13 +52,18 @@ function OrderManagement({ orders, onUpdateOrderStatus }) {
   return (
     <div className="order-management">
       <h2 className="section-title">주문 현황</h2>
-      <div className="orders-list">
-        {orders.length === 0 ? (
-          <div className="empty-orders">
-            <p>접수된 주문이 없습니다</p>
-          </div>
-        ) : (
-          orders.map((order) => {
+      {loading ? (
+        <div className="empty-orders">
+          <p>주문을 불러오는 중...</p>
+        </div>
+      ) : (
+        <div className="orders-list">
+          {orders.length === 0 ? (
+            <div className="empty-orders">
+              <p>접수된 주문이 없습니다</p>
+            </div>
+          ) : (
+            orders.map((order) => {
             const statusButton = getStatusButton(order);
             return (
               <div key={order.id} className="order-card">
@@ -105,8 +110,9 @@ function OrderManagement({ orders, onUpdateOrderStatus }) {
               </div>
             );
           })
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

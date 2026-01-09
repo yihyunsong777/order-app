@@ -27,13 +27,14 @@ git commit -m "프론트엔드 배포 준비"
 git push origin main
 ```
 
-### 2단계: Render에서 Web Service 생성
+### 2단계: Render에서 Static Site 생성
 
 1. **Render.com 대시보드 접속**
    - https://dashboard.render.com
    - 로그인
 
-2. **"New +" 버튼 클릭** → **"Web Service"** 선택
+2. **"New +" 버튼 클릭** → **"Static Site"** 선택
+   - ⚠️ **Web Service가 아닌 Static Site 선택!**
 
 3. **GitHub 저장소 연결**
    - GitHub 계정 연결 (처음인 경우)
@@ -42,18 +43,17 @@ git push origin main
 4. **서비스 설정 입력**:
    ```
    Name: order-app-ui
-   Region: 백엔드와 같은 지역 (예: Singapore)
    Branch: main
    Root Directory: ui
-   Runtime: Node
    Build Command: npm install && npm run build
-   Start Command: npm start
+   Publish Directory: dist
    ```
 
    **중요**: 
    - `Root Directory`를 `ui`로 설정해야 합니다
    - `Build Command`는 빌드만 수행
-   - `Start Command`는 빌드된 파일을 서빙
+   - `Publish Directory`는 `dist` (Vite 빌드 출력 폴더)
+   - **Start Command는 없습니다!** (Static Site에는 불필요)
 
 5. **환경 변수 추가** (Environment Variables):
    
@@ -74,11 +74,11 @@ git push origin main
    NODE_ENV = production
    ```
 
-6. **"Create Web Service"** 클릭
+6. **"Create Static Site"** 클릭
 
-7. **배포 대기** (약 3-5분)
+7. **배포 대기** (약 2-3분)
    - 빌드 과정에서 환경 변수가 주입됩니다
-   - 빌드 완료 후 자동으로 서비스가 시작됩니다
+   - 빌드 완료 후 자동으로 정적 파일이 서빙됩니다
 
 ---
 

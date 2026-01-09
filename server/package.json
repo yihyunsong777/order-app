@@ -12,6 +12,7 @@
     "setup-db": "node src/scripts/setupDatabase.js",
     "create-db": "node src/scripts/createDb.js",
     "init-db": "node src/scripts/initDatabase.js",
+    "init-render-db": "node src/scripts/initRenderDatabase.js",
     "update-images": "node src/scripts/downloadAndUpdateImages.js"
   },
   "keywords": [

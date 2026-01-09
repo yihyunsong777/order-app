@@ -3,10 +3,17 @@ const API_BASE_URL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : 'http://localhost:3000/api';
 
+// 디버깅: API URL 확인
+console.log('🔗 API Base URL:', API_BASE_URL);
+console.log('🔗 VITE_API_URL:', import.meta.env.VITE_API_URL);
+
 // API 호출 헬퍼 함수
 const apiCall = async (endpoint, options = {}) => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  console.log('📡 API 호출:', url, options.method || 'GET');
+  
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -14,15 +21,36 @@ const apiCall = async (endpoint, options = {}) => {
       ...options,
     });
 
+    console.log('📥 응답 상태:', response.status, response.statusText);
+
+    // 응답이 JSON인지 확인
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('❌ JSON이 아닌 응답:', text);
+      throw new Error(`서버 응답 오류: ${response.status} ${response.statusText}`);
+    }
+
     const data = await response.json();
+    console.log('📦 응답 데이터:', data);
 
     if (!response.ok) {
-      throw new Error(data.error || 'API 호출 실패');
+      throw new Error(data.error || `API 호출 실패: ${response.status}`);
     }
 
     return data;
   } catch (error) {
-    console.error('API 호출 오류:', error);
+    console.error('❌ API 호출 오류:', {
+      url,
+      error: error.message,
+      stack: error.stack,
+    });
+    
+    // 네트워크 에러인 경우
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      throw new Error('네트워크 연결 실패. 서버가 실행 중인지 확인하세요.');
+    }
+    
     throw error;
   }
 };

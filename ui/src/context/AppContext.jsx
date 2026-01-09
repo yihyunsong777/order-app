@@ -28,7 +28,9 @@ export const AppProvider = ({ children }) => {
     const loadMenus = async () => {
       try {
         setMenusLoading(true);
+        console.log('🔄 메뉴 로드 시작...');
         const response = await menuAPI.getAllMenus();
+        console.log('✅ 메뉴 로드 성공:', response);
         if (response.success) {
           setMenus(response.data);
           // 재고 데이터 추출
@@ -38,10 +40,19 @@ export const AppProvider = ({ children }) => {
             quantity: menu.inventory,
           }));
           setInventory(inv);
+        } else {
+          console.error('❌ API 응답 실패:', response);
+          alert(`메뉴를 불러오는데 실패했습니다: ${response.error || '알 수 없는 오류'}`);
         }
       } catch (error) {
-        console.error('메뉴 로드 실패:', error);
-        alert('메뉴를 불러오는데 실패했습니다.');
+        console.error('❌ 메뉴 로드 실패:', error);
+        const errorMessage = error.message || '알 수 없는 오류';
+        console.error('에러 상세:', {
+          message: errorMessage,
+          name: error.name,
+          stack: error.stack,
+        });
+        alert(`메뉴를 불러오는데 실패했습니다.\n\n오류: ${errorMessage}\n\n브라우저 콘솔(F12)에서 자세한 정보를 확인하세요.`);
       } finally {
         setMenusLoading(false);
       }

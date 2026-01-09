@@ -8,6 +8,10 @@ const pool = new Pool({
   database: process.env.DB_NAME || 'order_app',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
+  // Render PostgreSQL은 SSL 연결 필수
+  ssl: process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: false, // Render의 자체 서명 인증서 허용
+  } : false,
 });
 
 // 연결 테스트

@@ -9,6 +9,10 @@ const initRenderDatabase = async () => {
     database: process.env.DB_NAME || 'order_app',
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+    // Render PostgreSQL은 SSL 연결 필수
+    ssl: {
+      rejectUnauthorized: false, // Render의 자체 서명 인증서 허용
+    },
   });
 
   const client = await pool.connect();

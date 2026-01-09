@@ -54,3 +54,4 @@ function InventorySection({ inventory, onUpdateInventory }) {
 
 export default InventorySection;
 
+

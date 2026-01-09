@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: order-app-server
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromService:
+          type: web
+          name: order-app-server
+          property: port
+      - key: DB_HOST
+        fromDatabase:
+          name: order-app-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: order-app-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: order-app-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: order-app-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: order-app-db
+          property: password
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: order-app-ui
+          property: host
+
+databases:
+  - name: order-app-db
+    databaseName: order_app
+    user: order_app_user
+    plan: free
+

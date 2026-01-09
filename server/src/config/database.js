@@ -9,7 +9,8 @@ const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   // Render PostgreSQL은 SSL 연결 필수
-  ssl: process.env.NODE_ENV === 'production' ? {
+  // Render 환경에서는 항상 SSL 사용 (DB_HOST에 'render.com' 포함 시)
+  ssl: (process.env.NODE_ENV === 'production' || process.env.DB_HOST?.includes('render.com')) ? {
     rejectUnauthorized: false, // Render의 자체 서명 인증서 허용
   } : false,
 });
